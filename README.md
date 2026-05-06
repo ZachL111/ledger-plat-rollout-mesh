@@ -1,68 +1,40 @@
 # ledger-plat-rollout-mesh
 
-`ledger-plat-rollout-mesh` is a focused Java codebase around package a Java local lab for rollout analysis with node-edge fixtures, cycle and reachability reports, and documented operating limits. It is meant to be easy to inspect, run, and extend without a hosted service.
-
-## Ledger Plat Rollout Mesh Walkthrough
-
-I would read the project from the outside in: command, fixture, model, then roadmap. That keeps the platform engineering idea grounded in files that can be checked locally.
+`ledger-plat-rollout-mesh` explores platform engineering with a small Java codebase and local fixtures. The technical goal is to package a Java local lab for rollout analysis with node-edge fixtures, cycle and reachability reports, and documented operating limits.
 
 ## Reason For The Project
 
-This project keeps the domain idea close to the tests. That makes it useful as a reference implementation, a small experiment, or a starting point for a more specialized tool.
+The point is to make a small domain rule concrete enough that a reader can change it and immediately see what broke.
+
+## Ledger Plat Rollout Mesh Review Notes
+
+Start with `quota pressure` and `rollout width`. Those cases create the widest score spread in this repo, so they are the best quick check when the model changes.
+
+## What It Does
+
+- `fixtures/domain_review.csv` adds cases for rollout width and quota pressure.
+- `metadata/domain-review.json` records the same cases in structured form.
+- `config/review-profile.json` captures the read order and the two review questions.
+- `examples/ledger-plat-rollout-walkthrough.md` walks through the case spread.
+- The Java code includes a review path for `quota pressure` and `rollout width`.
+- `docs/field-notes.md` explains the strongest and weakest cases.
 
 ## How It Is Put Together
 
-The project is organized around a compact model rather than a large framework. Inputs are scored, classified, and checked against golden fixtures. The constants live in code and are mirrored in metadata so documentation drift is easy to catch. The Java implementation uses a compact package layout and direct assertion checks.
+The fixture data drives the tests. The code stays thin, while `metadata/domain-review.json` and `config/review-profile.json` explain what each case is meant to protect.
 
-## Data Notes
+The Java addition stays small enough to inspect in one sitting.
 
-`pressure` is the first example I would inspect because it lands on the `review` path with a score of 111. The broader file also keeps `degraded` at -8 and `recovery` at 236, which gives the model a useful low-to-high spread.
-
-## Capabilities
-
-- Uses fixture data to keep route policy changes visible in code review.
-- Includes extended examples for rollout constraints, including `recovery` and `degraded`.
-- Documents environment checks tradeoffs in `docs/operations.md`.
-- Runs locally with a single verification command and no external credentials.
-- Stores project constants and verification metadata in `metadata/project.json`.
-
-## Getting It Running
-
-Clone the repository, enter the directory, and run the verifier. No database server, cloud account, or token is required.
-
-## Check The Work
-
-```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File scripts/audit.ps1
-```
-
-The audit command checks repository structure and README constraints before it delegates to the verifier.
-
-## Where Things Live
-
-- `src`: primary implementation
-- `tests`: verification harness
-- `fixtures`: compact golden scenarios
-- `examples`: expanded scenario set
-- `metadata`: project constants and verification metadata
-- `docs`: operations and extension notes
-- `scripts`: local verification and audit commands
-
-## Tradeoffs
-
-The examples cover useful edges, not every edge. A larger version would add malformed-input tests, richer reports, and deeper domain parsers.
-
-## Possible Extensions
-
-- Add malformed input fixtures so the failure path is as visible as the happy path.
-- Split the scoring constants into a typed configuration object and validate it before use.
-- Add a comparison mode that shows how decisions change when one signal is adjusted.
-- Add one more platform engineering fixture that focuses on a malformed or borderline input.
-
-## Command Examples
+## Run It
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts/verify.ps1
 ```
 
-This runs the language-level build or test path against the compact fixture set.
+## Check It
+
+That command is also the regression path. It verifies the domain cases and catches mismatches between the CSV, metadata, and code.
+
+## Boundaries
+
+This remains a local project with deterministic fixtures. It does not depend on credentials, hosted services, or live data. Future work should add richer malformed inputs before widening the public API.
